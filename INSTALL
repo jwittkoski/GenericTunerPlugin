@@ -1,0 +1,31 @@
+Build the plugin:
+
+1. make
+
+Install the plugin:
+
+1. cp GenericTunerPlugin.so /opt/sagetv/server/irtunerplugins/
+2. Read README and gentuner.README
+3. Examine the gentuner.* scripts to see which one is the closest
+   to your setup. You may need to customize one of the scripts
+   to suite your setup. It would be a good idea to test your 
+   version of gentuner with your setup directly from the
+   command line to make sure it's working before trying it
+   with Sage. You could try things like:
+       "gentuner REMOTES", or
+       "gentuner KEYS REMOTE_NAME_HERE", or
+       "gentuner CAN_TUNE REMOTE_NAME_HERE", or
+       "gentuner SEND REMOTE_NAME_HERE OK", or
+       "gentuner TUNE REMOTE_NAME_HERE OK", etc
+4. cp gentuner.YOURS /opt/sagetv/server/gentuner
+5. Stop and start SageTV
+6. In SageTV, go to the source setup for the tuner that will
+   use the tuning plugin connected to this STB and click on
+   "Tuner Control".
+7. Click "Change Tuning Device" - you should see the name of
+   the remotes your gentuner script reports. Select it.
+
+Notes:
+Currently debugging is enabled and lots of stuff will get logged to
+/opt/sagetv/server/gentuner.log. You can disable that in the source
+if desired. An option will be added later.

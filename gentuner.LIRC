@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# gentuner.LIRC
+# GenericTunerPlugin to LIRC Connector
+#
+# See gentuner.README for details on gentuner
+#
+# This script proxies commands from the Generic Tuner Plugin
+# to LIRC. If the remote name defined in the lircd.conf file
+# ends in "-N" (where N is 1, 2, 3 or 4), it will also 
+# use SET_TRANSMITTERS to restrict which emitters LIRC uses.
+# Your LIRC hardware must support this feature.
+#
+
+CMD=$1
+REMOTE=$2
+KEY=$3
+CHANNEL=$3
+DELAY=.1
+LOCKFILE=/tmp/lirclock
+
+if [ "$CMD" = "REMOTES" ]; then
+    /usr/bin/irsend LIST "" "" 2>&1 | cut -d" " -f2
+elif [ "$CMD" = "KEYS" ]; then
+    /usr/bin/irsend LIST "$REMOTE" "" 2>&1 | cut -d" " -f3
+elif [ "$CMD" = "SEND" ]; then
+    while [ -f $LOCKFILE ]
+    do
+        #echo "Waiting for lock"
+        sleep $DELAY
+    done
+
+    touch $LOCKFILE
+
+    POST=${REMOTE:(-2)}
+    TRANSMITTER_NUM=${REMOTE:(-1)}
+    if [[ ${POST/-[1-9]/OK} = "OK" ]]; then
+        /usr/bin/irsend SET_TRANSMITTERS $TRANSMITTER_NUM
+        sleep $DELAY
+    else
+        /usr/bin/irsend SET_TRANSMITTERS 1 2 3 4
+        sleep $DELAY
+    fi
+
+    /usr/bin/irsend SEND_ONCE $REMOTE $KEY
+    sleep $DELAY
+    rm $LOCKFILE
+
+elif [ "$CMD" = "TUNE" ]; then
+    echo "NO"
+elif [ "$CMD" = "CAN_TUNE" ]; then
+    echo "NO"
+else
+    exit 1
+fi
+

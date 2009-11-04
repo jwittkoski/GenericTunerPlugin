@@ -1,0 +1,107 @@
+#!/usr/bin/perl
+#
+# gentuner.CUSTOM
+# GenericTunerPlugin Connector Custom Example
+#
+# See gentuner.README for details on gentuner
+#
+# This is an example of a more complex working
+# gentuner script to demonstrate that you can
+# customize gentuner as needed for your setup.
+# This code is very specific to the tuners,
+# encoders, and hardware that was used
+# and will unlikely work for the general case.
+#
+# It does several things:
+#  - Reports back to the plugin when asked that it
+#    supports three remotes.
+#  - Reports back to the plugin when asked that each
+#    remote has the keys 0-9 and "OK"
+#  - Reports back to the plugin when asked that it
+#    supports macro tuning, but when it actually does
+#    the tuning it sends each digit individually
+#  - Uses the last digit of the remote name to enable
+#    only the correct emitter on the multi-emitter
+#    USB IR tuning device. (In this case, an Iguana IR)
+#  - Allows the delay between each digit and each tune
+#    to be defined
+#  - Uses v4l2-ctl to reset the audio input of the
+#    PVR-500 related to the specified remote after each
+#    tune. (This was done because occasionally the 
+#    PVR-500 audio would drop out and reseting the 
+#    audio input at the beginning of a recording usually
+#    fixes the problem.
+#
+# Copyright (c) 2009 John P. Wittkoski. All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of either:
+#
+# a) the GNU Library General Public License as published by the Free
+#    Software Foundation; either version 2, or (at your option) any
+#    later version, or
+#
+# b) the "Artistic License" which comes with Perl source code.
+#
+
+use strict;
+use Time::HiRes;
+
+my $command = $ARGV[0];
+my $remote = $ARGV[1];
+my $key = $ARGV[2];
+my $channel = $ARGV[2];
+my $delay_between_keys  = 300000;	# in microseconds
+my $delay_between_tunes = 1000000;	# in microseconds
+my $device_map = { 'FiOS-TV-1' => 0,
+                   'FiOS-TV-2' => 2,
+                   'FiOS-TV-3' => 4,
+                 };
+
+my $transmitter = "15";
+if ( $remote =~ /-([1-4])$/ ) {
+    $transmitter = ( 2 ** ( $1 - 1 ) ); 
+}
+
+my $raw_device = "";
+if ( $remote && defined($device_map->{$remote}) ) {
+    $raw_device = $device_map->{$remote};
+}
+
+if ( $command eq "REMOTES" ) {
+    my @remotes = qw/FiOS-TV-1 FiOS-TV-2 FiOS-TV-3/;
+    foreach ( @remotes ) {
+        print "$_\n";
+    }
+} elsif ( $command eq "KEYS" ) {
+    my @keys = qw/1 2 3 4 5 6 7 9 0 OK/;
+    foreach ( @keys ) {
+        print "$_\n";
+    }
+} elsif ( $command eq "TUNE" ) {
+
+    #print "/usr/bin/igclient -v --set-channels=$transmitter\n";
+    system("/usr/bin/igclient -v --set-channels=$transmitter");
+    Time::HiRes::usleep($delay_between_tunes);
+
+    # send prefix key here if needed
+
+    foreach my $digit ( split('', $channel) ) {
+        #print "/usr/bin/igclient -v --send=/opt/sagetv/server/gentuner_keys/$digit.txt\n";
+        system("/usr/bin/igclient -v --send=/opt/sagetv/server/gentuner_keys/$digit.txt");
+        Time::HiRes::usleep($delay_between_keys);
+    }
+
+    # send post key here
+    #print "/usr/bin/igclient -v --send=/opt/sagetv/server/gentuner_keys/OK.txt\n";
+    system("/usr/bin/igclient -v --send=/opt/sagetv/server/gentuner_keys/OK.txt");
+    Time::HiRes::usleep($delay_between_keys);
+
+    # Reset audio input for PVR-500 device
+    #print "v4l2-ctl -d $raw_device --set-audio-input=1\n";
+    system("v4l2-ctl -d $raw_device --set-audio-input=1");
+
+} elsif ( $command eq "CAN_TUNE" ) {
+    print "OK\n";
+}
+
