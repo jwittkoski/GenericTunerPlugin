@@ -53,6 +53,7 @@ void _log(char *pref, char *fmt, ...) {
 	va_list ap;
 	FILE *f1;
 	f1 = fopen(LOG_FILE, "a+");
+	if (f1==NULL) return;
 	va_start(ap, fmt);
 	fprintf(f1, "%s: ", pref);
 	vfprintf(f1, fmt, ap);
