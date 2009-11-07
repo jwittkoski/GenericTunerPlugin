@@ -19,7 +19,9 @@
 #    remote has the keys 0-9 and "OK"
 #  - Reports back to the plugin when asked that it
 #    supports macro tuning, but when it actually does
-#    the tuning it sends each digit individually
+#    the tuning it sends each digit as an individual
+#    keypress. It also sends the "OK" keypress after
+#    all the digits are sent.
 #  - Uses the last digit of the remote name to enable
 #    only the correct emitter on the multi-emitter
 #    USB IR tuning device. (In this case, an Iguana IR)
