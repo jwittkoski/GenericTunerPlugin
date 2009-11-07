@@ -32,14 +32,15 @@ KEYS remote
 SEND remote key
     Action for gentuner to take:
         transmit "key" to "remote"
-    How exactly you transmit this key depends on your setup.
+        How exactly you transmit this key depends on your setup.
 TUNE remote channel
     Action for gentuner to take:
         use "remote" to tune to "channel"
         "channel" is an integer
+        How exactly you tune depends on your setup.
 CAN_TUNE remote
     Action for gentuner to take:
-        returns string "OK" if "remote can tune by channel (i.e. 
+        returns string "OK" if "remote" can tune by channel (i.e. 
         macro tune) instead of using individual keys
 
 Note that currently "remote", "key", and "channel" are strings
