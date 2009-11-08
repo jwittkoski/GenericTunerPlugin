@@ -249,12 +249,14 @@ remote* LoadRemotes(const char* pszPathName) {
             if ( 0 == strcmp((const char *)pszPathName,(const char *)newRemote->name) ) {
                 // add the new remote to the list
 		        AddRemote(newRemote, &head);
+	            INFO1("Returning Remote: %s", (const char *)newRemote->name);
                 // save name in loadedDevName for MacroTune
                 strncpy(loadedDevName, pszPathName, 256);
             }
         } else {
             // add the new remote to the list
 		    AddRemote(newRemote, &head);
+	        INFO1("Returning Remote: %s", (const char *)newRemote->name);
         }
 	}
 	fclose(f1);
