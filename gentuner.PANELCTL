@@ -1,0 +1,94 @@
+#!/usr/bin/perl
+#
+# gentuner.PANELCTL
+# GenericTunerPlugin Connector to control STBs via firewire using panelctl
+#
+# This script is meant to be called by the GenericTunerPlugin for sagetv.  It
+# calls panelctl, a firewire tuning program, to tune STBs in the device_map list.
+# In order to use this, device_map MUST be modified to reflect the names and GUIDs
+# of the specific STBs to be controlled.  The GUIDs can be learned with plugreport, 
+# and with panelctl -v.
+#
+# This program requires panelctl 0.2 or later.  To confirm, 'man panelctl' should
+# indicate that the -g switch is available.  
+#
+# In addition to the standard calling sequence defined in gentuner.README, this 
+# program accepts two switches.  They are only useful for testing, and only modify
+# the behavior of the TUNE command.
+#
+#    -t    Test mode.  Print the TUNE command to be executed, but don't execute it.
+#    -v    Verbose mode.  Print the TUNE command, AND execute it.
+#
+# So 'gentuner.PANELCTL -t TUNE FW_comcast0 150' will print the command that would normally
+# be executed to tune the STB called FW_comcast0 to channel 150, but won't actually
+# execute the command.
+#
+# See gentuner.README for further details on gentuner
+#
+# Copyright (c) 2009 John P. Wittkoski, Jerry Fiddler. All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of either:
+#
+# a) the GNU Library General Public License as published by the Free
+#    Software Foundation; either version 2, or (at your option) any
+#    later version, or
+#
+# b) the "Artistic License" which comes with Perl source code.
+#
+
+use strict;
+use Getopt::Std;
+
+# The following three variables (device_map, tuneCmd, keys)  are the only lines
+# that should normally need to be changed.  device_map is a list of the STBs
+# which will be tuned, each with its GUID.  tuneCmd is the command to be executed.
+# It should only be changed if using something other than the default panelctl.
+# keys is the list of keys shown on the "test infrared codes" screen.  It doesn't
+# seem to work right now anyway, which just means that the STB needs to be tested
+# in a different way.
+
+my %device_map = (
+    'FW_comcast0' => '0x11092b',
+    'FW_comcast1' => '0xfea9ce75',
+);
+my $tuneCmd = "/usr/local/bin/panelctl -g %s %s";
+my @keys = qw/1 2 3 4 5 6 7 9 0 ok power/;
+
+our ($opt_t, $opt_v);
+
+getopts ('tv');
+
+my $command = $ARGV[0];
+my $remote = $ARGV[1];
+my $key = $ARGV[2];
+my $channel = $ARGV[2];
+
+if ( $command eq "REMOTES" ) {
+    # output a list of remotes that we know how to address 
+    foreach (keys(%device_map)) {
+        print "$_\n";
+    }
+} elsif ( $command eq "KEYS" ) {
+    # output the list of keys specified above
+    foreach ( @keys ) {
+        print "$_\n";
+    }
+} elsif (( $command eq "TUNE" ) || ( $command eq "SEND")) {
+    # tune the specified remote, if it's valid
+    exists $device_map{"$remote"}
+      or die "Remote $remote unknown.  Exiting.\n";
+    my $sysCommand = sprintf ($tuneCmd, $device_map{"$remote"}, $channel);
+    if ($opt_t || $opt_v) {
+        printf ("%s\n", $sysCommand);
+    }
+    if (! $opt_t) {
+        # execute the command.  Throw an error if it doesn't work
+        system ($sysCommand) == 0
+          or die "System call failed: $sysCommand\n";
+    }
+} elsif ( $command eq "CAN_TUNE" ) {
+    # indicate that we can macrotune.
+    print "OK\n";
+}
+
