@@ -47,7 +47,7 @@
 #endif
 
 #define PLUGIN_VERSION "1.1"
-#define PLUGIN_REVISION "$Revision: $"
+#define PLUGIN_REVISION "$Revision$"
 
 // used by the macro tune to hold the command of the last loaded remote
 static char loadedDevName[256];
