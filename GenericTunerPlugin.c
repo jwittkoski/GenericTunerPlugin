@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
+#include <time.h>
 #include "GenericTunerPlugin.h"
 
 #ifndef DEVICE_NAME
@@ -45,35 +46,77 @@
 #define CMD_PATH "/opt/sagetv/server/gentuner"
 #endif
 
+#define PLUGIN_VERSION "1.1"
+#define PLUGIN_REVISION "$Revision: $"
+
 // used by the macro tune to hold the command of the last loaded remote
 static char loadedDevName[256];
 
+// syslog like log levels
+#define LOG_NONE   -1   /* don't log anything */
+#define LOG_ERROR   3   /* error conditions */
+#define LOG_WARNING 4   /* warning conditions */
+#define LOG_INFO    6   /* informational */
+#define LOG_DEBUG   7   /* debug-level messages */
+
+// only messages with priority of LOG_LEVEL and lower are logged
+#define DEFAULT_LOG_LEVEL LOG_DEBUG
+
+int currentLogLevel = DEFAULT_LOG_LEVEL;
+
 // Simply non-efficient logger.
-void _log(char *pref, char *fmt, ...) {
-	va_list ap;
-	FILE *f1;
-	f1 = fopen(LOG_FILE, "a+");
-	if (f1==NULL) return;
-	va_start(ap, fmt);
-	fprintf(f1, "%s: ", pref);
-	vfprintf(f1, fmt, ap);
-	fprintf(f1,"\n");
-	va_end(ap);
-	fflush(f1);
-	fclose(f1);
+void _log(int priority, char *fmt, ...) {
+    va_list ap;
+    time_t now;
+    struct tm *timeinfo;
+    FILE *logfile;
+
+    if ( priority > currentLogLevel ) return; 
+
+    logfile = fopen(LOG_FILE, "a+");
+	if (logfile == NULL) return;
+
+    time(&now);
+    timeinfo = localtime(&now);
+    fprintf(logfile, "%04i-%02i-%02i %02i:%02i ", timeinfo->tm_year + 1900, timeinfo->tm_mon + 1,
+            timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min);
+
+    switch(priority) {
+        case LOG_ERROR:
+            fprintf(logfile, "ERROR: ");
+            break;
+        case LOG_WARNING:
+            fprintf(logfile, "WARNING: ");
+            break;
+        case LOG_INFO:
+            fprintf(logfile, "INFO: ");
+            break;
+        case LOG_DEBUG:
+            fprintf(logfile, "DEBUG: ");
+            break;
+        default:
+            break;
+    } 
+  
+    va_start(ap, fmt);
+    vfprintf(logfile, fmt, ap);
+    va_end(ap);
+
+    fprintf(logfile, "\n");
+
+    fflush(logfile);
+    fclose(logfile);
 }
 
-#define INFO(s) _log("INFO", s)
-#define INFO1(f,a) _log("INFO", f,a)
-#define INFO2(f,a,b) _log("INFO", f,a,b)
-#define INFO3(f,a,b,c) _log("INFO", f,a,b,c)
-#define ERROR(s) _log("ERROR", s)
-#define ERROR1(f,a) _log("ERROR", f,a)
-#define ERROR2(f,a,b) _log("ERROR", f,a,b)
+// logging shortcuts
+#define _log_error(a, args...) _log(LOG_ERROR, a, ## args);
+#define _log_warning(a, args...) _log(LOG_WARNING, a, ## args);
+#define _log_info(a, args...) _log(LOG_INFO, a, ## args);
+#define _log_debug(a, args...) _log(LOG_DEBUG, a, ## args);
 
 // simple method to allocate and copy string
 char *alloc_string(char *str) {
-	if (str==NULL) return NULL;
+	if ( str == NULL ) return NULL;
 	char *newStr = malloc(strlen(str)+1); 
 	strcpy((char *)newStr, (const char *)str);
 	return newStr;
@@ -83,7 +126,7 @@ command* CreateCommand(char *Name) {
 	struct command *Com; //pointer to new command structure
 
 	Com = (struct command*)malloc(sizeof(struct command));//allocate space for a command structure
-	if (Com == NULL) {
+	if ( Com == NULL ) {
 		return Com;
 	}
 	Com->name = (unsigned char *)Name; //point to caller allocated name string
@@ -108,16 +151,22 @@ const char* DeviceName() {
 // Open the device
 // This is a leftover from the original tuning plugin which
 // assumed that a serial port was used for tuning.
+// So here we just log the current version and revision number.
 // Note: The int value that is returned here is passed as 
 //       "devHandle" to several other routines by Sage.
 //
 int OpenDevice(int ComPort) {
-	INFO1("OpenDevice %d", ComPort);
+    int revision = 0;
+    char *v_loc = strchr(PLUGIN_REVISION, ' ');
+    if ( v_loc != NULL ) sscanf(v_loc+1, "%9d", &revision);
+	_log_info("%s, Version %s, Revision %i", DEVICE_NAME, PLUGIN_VERSION, revision);
+
+	_log_debug("OpenDevice: %d", ComPort);
 	return 1;
 }
 
 void CloseDevice(int devHandle) {
-	INFO1("CloseDevice %d", devHandle);
+	_log_debug("CloseDevice: %d", devHandle);
 }
 
 unsigned long FindBitRate(int devHandle) {
@@ -163,7 +212,7 @@ void AddCommand(struct command *Command, struct command **Command_List) {
 
 void chomp (char* s) {
     int end = strlen(s) - 1;
-    if (end >= 0 && s[end] == '\n')
+    if ( end >= 0 && s[end] == '\n' )
         s[end] = '\0';
 }
 
@@ -171,20 +220,20 @@ int LoadRemoteKeys(struct remote *Remote) {
 	char buf[1024];
     char cmd[1024];
 	
-	INFO1("Loading Keys for Remote %s", Remote->name);
-	
-	snprintf(cmd, 1024, "%s KEYS %s", CMD_PATH, Remote->name);   
+	snprintf(cmd, sizeof(cmd), "%s KEYS %s", CMD_PATH, Remote->name);   
+	_log_debug("LoadRemoteKeys: Using command: %s", cmd);
+
 	FILE *f1 = popen(cmd, "r");
-	if (f1==NULL) {
-		ERROR1("Failed to execute keys command %s", cmd);
+	if ( f1 == NULL ) {
+		_log_error("LoadRemoteKeys: Failed to execute KEYS command: %s", cmd);
 		return 0;
 	}
 
 	command *head = NULL;
 	command *newCmd;
 	
-	while (fgets(buf, 1024, f1)) {
-		if (buf==NULL) break;
+	while (fgets(buf, sizeof(buf), f1)) {
+		if ( buf == NULL ) break;
 		chomp(buf);
 		
 		newCmd = CreateCommand(alloc_string(buf));
@@ -213,30 +262,30 @@ remote* LoadRemotes(const char* pszPathName) {
 	char buf[1024];
     char cmd[1024];
 	
-	if (pszPathName==NULL) {
-		INFO("LoadRemotes Called");
+	remote *head = NULL;
+
+	if ( pszPathName == NULL ) {
+		_log_debug("LoadRemotes: No Remote");
 	} else {
-		INFO1("LoadRemotes(%s) Called", pszPathName);
+		_log_debug("LoadRemotes: Remote: %s", pszPathName);
 	}
 
-	remote *head = NULL;
-	
-	snprintf(cmd, 1024, "%s REMOTES", CMD_PATH);   
-	INFO1("Loading Remotes using command: %s", cmd);
+	snprintf(cmd, sizeof(cmd), "%s REMOTES", CMD_PATH);   
+	_log_debug("LoadRemotes: Using command: %s", cmd);
 
 	FILE *f1 = popen(cmd, "r");
-	if (f1==NULL) {
-		ERROR1("Failed to execute REMOTES command %s", cmd);
+	if ( f1 == NULL ) {
+		_log_error("LoadRemotes: Failed to execute REMOTES command: %s", cmd);
 		return NULL;
 	}
 	
 	remote *newRemote;
-	while (fgets(buf, 1024, f1)) {
-		if (buf==NULL) break;
+	while (fgets(buf, sizeof(buf), f1)) {
+		if ( buf == NULL ) break;
 		
 		// eat the newline
 		chomp(buf);
-	    INFO1("Found Remote: %s", buf);
+	    _log_debug("LoadRemotes: Found Remote: %s", buf);
 		
         // each line contains one and only one remote name
 		newRemote = CreateRemote((unsigned char *)alloc_string(buf));
@@ -249,14 +298,14 @@ remote* LoadRemotes(const char* pszPathName) {
             if ( 0 == strcmp((const char *)pszPathName,(const char *)newRemote->name) ) {
                 // add the new remote to the list
 		        AddRemote(newRemote, &head);
-	            INFO1("Returning Remote: %s", (const char *)newRemote->name);
-                // save name in loadedDevName for MacroTune
-                strncpy(loadedDevName, pszPathName, 256);
+	            _log_debug("LoadRemotes: Returning Remote: %s", (const char *)newRemote->name);
+                // save name in loadedDevName for MacroTune and CanMacroTune
+                strncpy(loadedDevName, pszPathName, sizeof(loadedDevName));
             }
         } else {
             // add the new remote to the list
 		    AddRemote(newRemote, &head);
-	        INFO1("Returning Remote: %s", (const char *)newRemote->name);
+	        _log_debug("LoadRemotes: Returning Remote: %s", (const char *)newRemote->name);
         }
 	}
 	fclose(f1);
@@ -265,11 +314,11 @@ remote* LoadRemotes(const char* pszPathName) {
 }
 
 remote* CreateRemote(unsigned char *Name) {
-	INFO1("Creating/Adding Remote: %s", Name);
+	_log_debug("CreateRemote: Remote: %s", Name);
 	remote *Remote;
 
 	Remote = (struct remote*)malloc(sizeof(struct remote)); //allocate space for a remote structure
-	if (Remote == NULL) {
+	if ( Remote == NULL ) {
 		return Remote;
 	}
 	Remote->name = Name; //point to caller allocated name string
@@ -281,7 +330,7 @@ remote* CreateRemote(unsigned char *Name) {
 }
 
 void InitDevice() {
-	INFO("InitDevice Called");
+	_log_debug("InitDevice");
 }
 
 command* RecordCommand(int devHandle, unsigned char *Name) {
@@ -295,19 +344,19 @@ void PlayCommand(int devHandle, remote *remote, unsigned char *name, int tx_repe
         return;
     }
 
-	INFO3("PlayCommand Called: Remote: %s; Command: %s; Repeats: %d", remote->name, name, tx_repeats);
-   	INFO1("devHandle is: %i", devHandle);
+	snprintf(cmd, sizeof(cmd), "%s SEND %s %s", CMD_PATH, remote->name, name);   
+	_log_debug("PlayCommand: Using command: %s", cmd);
+	_log_info("PlayCommand: Remote: %s, Key: %s", remote->name, name);
 
-	snprintf(cmd, 1024, "%s SEND %s %s", CMD_PATH, remote->name, name);   
-    if (system(cmd)!=0) {
-    	ERROR1("Failed to execute Tuner Command: %s", cmd);
+    if ( system(cmd) != 0 ) {
+    	_log_error("PlayCommand: Failed to execute SEND command: %s", cmd);
     } else {
-    	INFO1("Executed Tuner Command without Error: %s", cmd);
+    	_log_debug("PlayCommand: Executed SEND command without error: %s", cmd);
     }
 }
 
 void FreeRemotes(remote **head) {
-	INFO("FreeRemotes Called.");
+	_log_debug("FreeRemotes");
 	command *Temp_Com; //temporary command pointer
 	remote *Temp_Rem; //temporary remote pointer
 	pattern *temp_pat; //temporary pattern pointer
@@ -353,25 +402,25 @@ int CanMacroTune(void) {
 	char buf[1024];
     char cmd[1024];
 	
-	snprintf(cmd, 1024, "%s CAN_TUNE %s", CMD_PATH, loadedDevName);   
-	INFO1("CanMacroTune command: %s", cmd);
+	snprintf(cmd, sizeof(cmd), "%s CAN_TUNE %s", CMD_PATH, loadedDevName);   
+	_log_debug("CanMacroTune: Using command: %s", cmd);
 
 	FILE *f1 = popen(cmd, "r");
-	if (f1==NULL) {
-		ERROR1("Failed to execute CAN_TUNE command %s", cmd);
+	if ( f1 == NULL ) {
+		_log_error("CanMacroTune: Failed to execute CAN_TUNE command: %s", cmd);
 		return 0;
 	}
 	
     int result = 0;
-	while (fgets(buf, 1024, f1)) {
-		if (buf==NULL) break;
+	while (fgets(buf, sizeof(buf), f1)) {
+		if ( buf == NULL ) break;
 
 		chomp(buf);
         if ( buf[0] == 'O' && buf[1] == 'K' ) {
-	        INFO1("CAN_TUNE is OK: %s", buf);
+	        _log_debug("CanMacroTune: CAN_TUNE is OK: %s", buf);
             result = 1;
         } else {
-	        INFO1("CAN_TUNE is not OK: %s", buf);
+	        _log_debug("CanMacroTune: CAN_TUNE is not OK: %s", buf);
         }
 
         break;
@@ -385,12 +434,13 @@ int CanMacroTune(void) {
 void MacroTune(int devHandle, int channel) {
 	char cmd[1024];
 
-	INFO2("MacroTune: devHandle: %d, Channel %d", devHandle, channel);
+	snprintf(cmd, sizeof(cmd), "%s TUNE %s %d", CMD_PATH, loadedDevName, channel);   
+	_log_debug("MacroTune: Using command: %s", cmd);
+	_log_info("MacroTune: Remote: %s, Channel: %d", loadedDevName, channel);
 
-	snprintf(cmd, 1024, "%s TUNE %s %d", CMD_PATH, loadedDevName, channel);   
-    if (system(cmd)!=0) {
-    	ERROR1("Failed to execute MacroTune Command: %s", cmd);
+    if ( system(cmd) != 0 ) {
+    	_log_error("MacroTune: Failed to execute TUNE command: %s", cmd);
     } else {
-    	INFO1("Executed MacroTune Command without Error: %s", cmd);
+    	_log_debug("MacroTune: Executed TUNE command without error: %s", cmd);
     }
 }
