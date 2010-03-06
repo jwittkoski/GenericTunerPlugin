@@ -4,6 +4,11 @@ Build the plugin:
 
 Install the plugin:
 
+IMPORTANT NOTE: After shutting down the SageTV process, always
+create a backup copy of your Sage.properties file before making
+any changes! If you make any changes to Sage.properties that
+break your setup, you can always revert to the backup copy.
+
 1. cp GenericTunerPlugin.so /opt/sagetv/server/irtunerplugins/
 2. Read README
 3. Examine the sample gentuner.* scripts to see which one most closely
@@ -19,13 +24,24 @@ Install the plugin:
        "gentuner.LOCAL CAN_TUNE REMOTE_NAME_HERE", or
        "gentuner.LOCAL SEND REMOTE_NAME_HERE OK", or
        "gentuner.LOCAL TUNE REMOTE_NAME_HERE OK", etc
-4. cp gentuner.LOCAL /opt/sagetv/server/gentuner
-5. Stop and start SageTV
-6. In SageTV, go to the source setup for the tuner that will
-   use the tuning plugin connected to this STB and click on
-   "Tuner Control".
-7. Click "Change Tuning Device" - you should see the name of
-   the remotes your gentuner script reports. Select it.
+6. Copy your version of gentuner to where the plugin can find it:
+        cp gentuner.LOCAL /opt/sagetv/server/gentuner
+7. Configure each video source to use the Generic Tuner Plugin.
+   Unfortunately, SageTV does not provide an easy way to change
+   the tuning plugin for a video souce after the source is 
+   initially configured. Your options are:
+   7a. Remove the video source and re-add it, selecting "Generic
+       Tuner" when asked to select a tuning plugin. Note that removing
+       and re-adding the video source will likely involve other work to
+       get the configuration back to where you had it.
+   7b. After stopping the SageTV process, edit the Sage.properties
+       file and change the appropriate "tuning_plugin" value to be:
+         /opt/sagetv/server/irtunerplugins/GenericTunerPlugin.so
+8. Stop and start SageTV
+9. In SageTV, go to the Setup -> Setup Video Sources menu, select the
+   video source that uses the Generic Tuner, click on "Tuner Control",
+   then "Change Tuning Device". You should see the list of the
+   remotes your gentuner script reports. Select it.
 
 Notes:
 Currently debugging is enabled and lots of stuff will get logged to
