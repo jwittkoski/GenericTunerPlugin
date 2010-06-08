@@ -24,7 +24,11 @@ break your setup, you can always revert to the backup copy.
        "gentuner.LOCAL CAN_TUNE REMOTE_NAME_HERE", or
        "gentuner.LOCAL SEND REMOTE_NAME_HERE OK", or
        "gentuner.LOCAL TUNE REMOTE_NAME_HERE OK", etc
-6. Copy your version of gentuner to where the plugin can find it:
+6. Copy your version of gentuner to where the plugin expects it.
+   Note that currently the Generic Tuner Plugin has the path to
+   gentuner hardcoded to "/opt/sagetv/server/gentuner".
+   You can create a symlink or recompile if you need to put
+   the plugin elsewhere.
         cp gentuner.LOCAL /opt/sagetv/server/gentuner
 7. Configure each video source to use the Generic Tuner Plugin.
    Unfortunately, SageTV does not provide an easy way to change
@@ -34,6 +38,7 @@ break your setup, you can always revert to the backup copy.
        Tuner" when asked to select a tuning plugin. Note that removing
        and re-adding the video source will likely involve other work to
        get the configuration back to where you had it.
+   Or: (not recommended, does not work as expected)
    7b. After stopping the SageTV process, edit the Sage.properties
        file and change the appropriate "tuning_plugin" value to be:
          /opt/sagetv/server/irtunerplugins/GenericTunerPlugin.so
