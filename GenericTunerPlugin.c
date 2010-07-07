@@ -74,7 +74,7 @@ void _log(int priority, char *fmt, ...) {
     if ( priority > currentLogLevel ) return; 
 
     logfile = fopen(LOG_FILE, "a+");
-	if (logfile == NULL) return;
+    if (logfile == NULL) return;
 
     time(&now);
     timeinfo = localtime(&now);
@@ -116,35 +116,35 @@ void _log(int priority, char *fmt, ...) {
 
 // simple method to allocate and copy string
 char *alloc_string(char *str) {
-	if ( str == NULL ) return NULL;
-	char *newStr = malloc(strlen(str)+1); 
-	strcpy((char *)newStr, (const char *)str);
-	return newStr;
+    if ( str == NULL ) return NULL;
+    char *newStr = malloc(strlen(str)+1); 
+    strcpy((char *)newStr, (const char *)str);
+    return newStr;
 }
 
 command* CreateCommand(char *Name) {
-	struct command *Com; //pointer to new command structure
+    struct command *Com; //pointer to new command structure
 
-	Com = (struct command*)malloc(sizeof(struct command));//allocate space for a command structure
-	if ( Com == NULL ) {
-		return Com;
-	}
-	Com->name = (unsigned char *)Name; //point to caller allocated name string
-	Com->next = NULL;
-	Com->pattern = NULL;
-	return Com; //return pointer to new command structure
+    Com = (struct command*)malloc(sizeof(struct command));//allocate space for a command structure
+    if ( Com == NULL ) {
+        return Com;
+    }
+    Com->name = (unsigned char *)Name; //point to caller allocated name string
+    Com->next = NULL;
+    Com->pattern = NULL;
+    return Com; //return pointer to new command structure
 }
 
 int NeedBitrate() {
-	return 0;
+    return 0;
 }
 
 int NeedCarrierFrequency() {
-	return 0;
+    return 0;
 }
 
 const char* DeviceName() {
-	return DEVICE_NAME;
+    return DEVICE_NAME;
 }
 
 //
@@ -159,55 +159,55 @@ int OpenDevice(int ComPort) {
     int revision = 0;
     char *v_loc = strchr(PLUGIN_REVISION, ' ');
     if ( v_loc != NULL ) sscanf(v_loc+1, "%9d", &revision);
-	_log_info("%s, Version %s, Revision %i", DEVICE_NAME, PLUGIN_VERSION, revision);
+    _log_info("%s, Version %s, Revision %i", DEVICE_NAME, PLUGIN_VERSION, revision);
 
-	_log_debug("OpenDevice: %d", ComPort);
-	return 1;
+    _log_debug("OpenDevice: %d", ComPort);
+    return 1;
 }
 
 void CloseDevice(int devHandle) {
-	_log_debug("CloseDevice: %d", devHandle);
+    _log_debug("CloseDevice: %d", devHandle);
 }
 
 unsigned long FindBitRate(int devHandle) {
-	return 0;
+    return 0;
 }
 
 unsigned long FindCarrierFrequency(int devHandle) {
-	return 0;
+    return 0;
 }
 
 void AddRemote(struct remote *Remote, struct remote **head) {
-	struct remote *Temp; //Local remote structure
+    struct remote *Temp; //Local remote structure
 
-	if (!(*head)) { //if there are no structures in the list
-		*head = Remote; //then assign this one to head.
-		(*head)->next = NULL;
-	} else //otherwise, add to end of list
-	{
-		Temp = *head;
-		while (Temp->next) {
-			Temp = Temp->next; //find the last structure in list
-		}
-		Temp->next = Remote; //assign the next field to the new structure
-		Remote->next = NULL; //assign the next field of the new structure to NULL
-	}
+    if (!(*head)) { //if there are no structures in the list
+        *head = Remote; //then assign this one to head.
+        (*head)->next = NULL;
+    } else //otherwise, add to end of list
+    {
+        Temp = *head;
+        while (Temp->next) {
+            Temp = Temp->next; //find the last structure in list
+        }
+        Temp->next = Remote; //assign the next field to the new structure
+        Remote->next = NULL; //assign the next field of the new structure to NULL
+    }
 }
 
 void AddCommand(struct command *Command, struct command **Command_List) {
-	struct command *Temp; //temporary command structure pointer
+    struct command *Temp; //temporary command structure pointer
 
-	if (!(*Command_List)) { //if no commands in list, assign Command_List
-		(*Command_List) = Command; //to the command structure
-		(*Command_List)->next = NULL;
-	} else {
-		Temp = (*Command_List); //ELSE add to end of list of commands
-		while (Temp->next) {
-			Temp = Temp->next;
-		}
-		Temp->next = Command;
-		Command->next = NULL;
-	}
+    if (!(*Command_List)) { //if no commands in list, assign Command_List
+        (*Command_List) = Command; //to the command structure
+        (*Command_List)->next = NULL;
+    } else {
+        Temp = (*Command_List); //ELSE add to end of list of commands
+        while (Temp->next) {
+            Temp = Temp->next;
+        }
+        Temp->next = Command;
+        Command->next = NULL;
+    }
 }
 
 void chomp (char* s) {
@@ -217,35 +217,35 @@ void chomp (char* s) {
 }
 
 int LoadRemoteKeys(struct remote *Remote) {
-	char buf[1024];
+    char buf[1024];
     char cmd[1024];
-	
-	snprintf(cmd, sizeof(cmd), "%s KEYS %s", CMD_PATH, Remote->name);   
-	_log_debug("LoadRemoteKeys: Using command: %s", cmd);
+    
+    snprintf(cmd, sizeof(cmd), "%s KEYS %s", CMD_PATH, Remote->name);   
+    _log_debug("LoadRemoteKeys: Using command: %s", cmd);
 
-	FILE *f1 = popen(cmd, "r");
-	if ( f1 == NULL ) {
-		_log_error("LoadRemoteKeys: Failed to execute KEYS command: %s", cmd);
-		return 0;
-	}
+    FILE *f1 = popen(cmd, "r");
+    if ( f1 == NULL ) {
+        _log_error("LoadRemoteKeys: Failed to execute KEYS command: %s", cmd);
+        return 0;
+    }
 
-	command *head = NULL;
-	command *newCmd;
-	
-	while (fgets(buf, sizeof(buf), f1)) {
-		if ( buf == NULL ) break;
-		chomp(buf);
-		
-		newCmd = CreateCommand(alloc_string(buf));
-		
-		AddCommand(newCmd, &head);
-	}
-	
-	fclose(f1);
+    command *head = NULL;
+    command *newCmd;
+    
+    while (fgets(buf, sizeof(buf), f1)) {
+        if ( buf == NULL ) break;
+        chomp(buf);
+        
+        newCmd = CreateCommand(alloc_string(buf));
+        
+        AddCommand(newCmd, &head);
+    }
+    
+    fclose(f1);
 
     Remote->command = head;
-	
-	return 0;
+    
+    return 0;
 }
 
 //
@@ -259,82 +259,82 @@ int LoadRemoteKeys(struct remote *Remote) {
 //        each time LoadRemotes is called.
 //
 remote* LoadRemotes(const char* pszPathName) {
-	char buf[1024];
+    char buf[1024];
     char cmd[1024];
-	
-	remote *head = NULL;
+    
+    remote *head = NULL;
 
-	if ( pszPathName == NULL ) {
-		_log_debug("LoadRemotes: No Remote");
-	} else {
-		_log_debug("LoadRemotes: Remote: %s", pszPathName);
-	}
+    if ( pszPathName == NULL ) {
+        _log_debug("LoadRemotes: No Remote");
+    } else {
+        _log_debug("LoadRemotes: Remote: %s", pszPathName);
+    }
 
-	snprintf(cmd, sizeof(cmd), "%s REMOTES", CMD_PATH);   
-	_log_debug("LoadRemotes: Using command: %s", cmd);
+    snprintf(cmd, sizeof(cmd), "%s REMOTES", CMD_PATH);   
+    _log_debug("LoadRemotes: Using command: %s", cmd);
 
-	FILE *f1 = popen(cmd, "r");
-	if ( f1 == NULL ) {
-		_log_error("LoadRemotes: Failed to execute REMOTES command: %s", cmd);
-		return NULL;
-	}
-	
-	remote *newRemote;
-	while (fgets(buf, sizeof(buf), f1)) {
-		if ( buf == NULL ) break;
-		
-		// eat the newline
-		chomp(buf);
-	    _log_debug("LoadRemotes: Found Remote: %s", buf);
-		
+    FILE *f1 = popen(cmd, "r");
+    if ( f1 == NULL ) {
+        _log_error("LoadRemotes: Failed to execute REMOTES command: %s", cmd);
+        return NULL;
+    }
+    
+    remote *newRemote;
+    while (fgets(buf, sizeof(buf), f1)) {
+        if ( buf == NULL ) break;
+        
+        // eat the newline
+        chomp(buf);
+        _log_debug("LoadRemotes: Found Remote: %s", buf);
+        
         // each line contains one and only one remote name
-		newRemote = CreateRemote((unsigned char *)alloc_string(buf));
-		
-		// load the remote keys
-		LoadRemoteKeys(newRemote);
-		
+        newRemote = CreateRemote((unsigned char *)alloc_string(buf));
+        
+        // load the remote keys
+        LoadRemoteKeys(newRemote);
+        
         // if pszPathName is defined, only add that remote to the list
         if ( pszPathName ) {
             if ( 0 == strcmp((const char *)pszPathName,(const char *)newRemote->name) ) {
                 // add the new remote to the list
-		        AddRemote(newRemote, &head);
-	            _log_debug("LoadRemotes: Returning Remote: %s", (const char *)newRemote->name);
+                AddRemote(newRemote, &head);
+                _log_debug("LoadRemotes: Returning Remote: %s", (const char *)newRemote->name);
                 // save name in loadedDevName for MacroTune and CanMacroTune
                 strncpy(loadedDevName, pszPathName, sizeof(loadedDevName));
             }
         } else {
             // add the new remote to the list
-		    AddRemote(newRemote, &head);
-	        _log_debug("LoadRemotes: Returning Remote: %s", (const char *)newRemote->name);
+            AddRemote(newRemote, &head);
+            _log_debug("LoadRemotes: Returning Remote: %s", (const char *)newRemote->name);
         }
-	}
-	fclose(f1);
-	
-	return head;
+    }
+    fclose(f1);
+    
+    return head;
 }
 
 remote* CreateRemote(unsigned char *Name) {
-	_log_debug("CreateRemote: Remote: %s", Name);
-	remote *Remote;
+    _log_debug("CreateRemote: Remote: %s", Name);
+    remote *Remote;
 
-	Remote = (struct remote*)malloc(sizeof(struct remote)); //allocate space for a remote structure
-	if ( Remote == NULL ) {
-		return Remote;
-	}
-	Remote->name = Name; //point to caller allocated name string
-	Remote->carrier_freq = 0;
-	Remote->bit_time = 0;
-	Remote->command = NULL;
-	Remote->next = NULL;
-	return Remote; //return pointer to remote structure
+    Remote = (struct remote*)malloc(sizeof(struct remote)); //allocate space for a remote structure
+    if ( Remote == NULL ) {
+        return Remote;
+    }
+    Remote->name = Name; //point to caller allocated name string
+    Remote->carrier_freq = 0;
+    Remote->bit_time = 0;
+    Remote->command = NULL;
+    Remote->next = NULL;
+    return Remote; //return pointer to remote structure
 }
 
 void InitDevice() {
-	_log_debug("InitDevice");
+    _log_debug("InitDevice");
 }
 
 command* RecordCommand(int devHandle, unsigned char *Name) {
-	return 0;
+    return 0;
 }
 
 void PlayCommand(int devHandle, remote *remote, unsigned char *name, int tx_repeats) {
@@ -344,103 +344,103 @@ void PlayCommand(int devHandle, remote *remote, unsigned char *name, int tx_repe
         return;
     }
 
-	snprintf(cmd, sizeof(cmd), "%s SEND %s %s", CMD_PATH, remote->name, name);   
-	_log_debug("PlayCommand: Using command: %s", cmd);
-	_log_info("PlayCommand: Remote: %s, Key: %s", remote->name, name);
+    snprintf(cmd, sizeof(cmd), "%s SEND %s %s", CMD_PATH, remote->name, name);   
+    _log_debug("PlayCommand: Using command: %s", cmd);
+    _log_info("PlayCommand: Remote: %s, Key: %s", remote->name, name);
 
     if ( system(cmd) != 0 ) {
-    	_log_error("PlayCommand: Failed to execute SEND command: %s", cmd);
+        _log_error("PlayCommand: Failed to execute SEND command: %s", cmd);
     } else {
-    	_log_debug("PlayCommand: Executed SEND command without error: %s", cmd);
+        _log_debug("PlayCommand: Executed SEND command without error: %s", cmd);
     }
 }
 
 void FreeRemotes(remote **head) {
-	_log_debug("FreeRemotes");
-	command *Temp_Com; //temporary command pointer
-	remote *Temp_Rem; //temporary remote pointer
-	pattern *temp_pat; //temporary pattern pointer
+    _log_debug("FreeRemotes");
+    command *Temp_Com; //temporary command pointer
+    remote *Temp_Rem; //temporary remote pointer
+    pattern *temp_pat; //temporary pattern pointer
 
-	while (*head) {
-		Temp_Rem = *head;
-		Temp_Com = (*head)->command;
-		while (Temp_Com) {
-			(*head)->command = (*head)->command->next;
-			temp_pat = Temp_Com->pattern;
-			while (temp_pat) {
-				Temp_Com->pattern = Temp_Com->pattern->next;
-				free(temp_pat->bytes);
-				free(temp_pat);
-				temp_pat = Temp_Com->pattern;
-			}
-			free(Temp_Com->name); //free command list
-			free(Temp_Com);
-			Temp_Com = (*head)->command;
-		}
-		(*head) = (*head)->next;
-		free(Temp_Rem->name); //free remote data
-		free(Temp_Rem);
-	}
-	*head = NULL;
+    while (*head) {
+        Temp_Rem = *head;
+        Temp_Com = (*head)->command;
+        while (Temp_Com) {
+            (*head)->command = (*head)->command->next;
+            temp_pat = Temp_Com->pattern;
+            while (temp_pat) {
+                Temp_Com->pattern = Temp_Com->pattern->next;
+                free(temp_pat->bytes);
+                free(temp_pat);
+                temp_pat = Temp_Com->pattern;
+            }
+            free(Temp_Com->name); //free command list
+            free(Temp_Com);
+            Temp_Com = (*head)->command;
+        }
+        (*head) = (*head)->next;
+        free(Temp_Rem->name); //free remote data
+        free(Temp_Rem);
+    }
+    *head = NULL;
 }
 
 void DumpRemotes(remote *head) {
-	command *chead = NULL;
-	while (head) {
-		printf("RemoteName: %s\n", head->name);
-	    chead = head->command;
-		while (chead) {
-			printf("CmdKey: %s\n", chead->name);
-			chead=chead->next;
-		}
-		printf("\n");
-		head = head->next;
-	}
+    command *chead = NULL;
+    while (head) {
+        printf("RemoteName: %s\n", head->name);
+        chead = head->command;
+        while (chead) {
+            printf("CmdKey: %s\n", chead->name);
+            chead=chead->next;
+        }
+        printf("\n");
+        head = head->next;
+    }
 }
 
 int CanMacroTune(void) {
-	char buf[1024];
+    char buf[1024];
     char cmd[1024];
-	
-	snprintf(cmd, sizeof(cmd), "%s CAN_TUNE %s", CMD_PATH, loadedDevName);   
-	_log_debug("CanMacroTune: Using command: %s", cmd);
+    
+    snprintf(cmd, sizeof(cmd), "%s CAN_TUNE %s", CMD_PATH, loadedDevName);   
+    _log_debug("CanMacroTune: Using command: %s", cmd);
 
-	FILE *f1 = popen(cmd, "r");
-	if ( f1 == NULL ) {
-		_log_error("CanMacroTune: Failed to execute CAN_TUNE command: %s", cmd);
-		return 0;
-	}
-	
+    FILE *f1 = popen(cmd, "r");
+    if ( f1 == NULL ) {
+        _log_error("CanMacroTune: Failed to execute CAN_TUNE command: %s", cmd);
+        return 0;
+    }
+    
     int result = 0;
-	while (fgets(buf, sizeof(buf), f1)) {
-		if ( buf == NULL ) break;
+    while (fgets(buf, sizeof(buf), f1)) {
+        if ( buf == NULL ) break;
 
-		chomp(buf);
+        chomp(buf);
         if ( buf[0] == 'O' && buf[1] == 'K' ) {
-	        _log_debug("CanMacroTune: CAN_TUNE is OK: %s", buf);
+            _log_debug("CanMacroTune: CAN_TUNE is OK: %s", buf);
             result = 1;
         } else {
-	        _log_debug("CanMacroTune: CAN_TUNE is not OK: %s", buf);
+            _log_debug("CanMacroTune: CAN_TUNE is not OK: %s", buf);
         }
 
         break;
-		
-	}
-	fclose(f1);
+        
+    }
+    fclose(f1);
 
-	return result;
+    return result;
 }
 
 void MacroTune(int devHandle, int channel) {
-	char cmd[1024];
+    char cmd[1024];
 
-	snprintf(cmd, sizeof(cmd), "%s TUNE %s %d", CMD_PATH, loadedDevName, channel);   
-	_log_debug("MacroTune: Using command: %s", cmd);
-	_log_info("MacroTune: Remote: %s, Channel: %d", loadedDevName, channel);
+    snprintf(cmd, sizeof(cmd), "%s TUNE %s %d", CMD_PATH, loadedDevName, channel);   
+    _log_debug("MacroTune: Using command: %s", cmd);
+    _log_info("MacroTune: Remote: %s, Channel: %d", loadedDevName, channel);
 
     if ( system(cmd) != 0 ) {
-    	_log_error("MacroTune: Failed to execute TUNE command: %s", cmd);
+        _log_error("MacroTune: Failed to execute TUNE command: %s", cmd);
     } else {
-    	_log_debug("MacroTune: Executed TUNE command without error: %s", cmd);
+        _log_debug("MacroTune: Executed TUNE command without error: %s", cmd);
     }
 }
