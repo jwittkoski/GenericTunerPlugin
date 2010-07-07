@@ -241,7 +241,7 @@ int LoadRemoteKeys(struct remote *Remote) {
         AddCommand(newCmd, &head);
     }
     
-    fclose(f1);
+    pclose(f1);
 
     Remote->command = head;
     
@@ -308,7 +308,7 @@ remote* LoadRemotes(const char* pszPathName) {
             _log_debug("LoadRemotes: Returning Remote: %s", (const char *)newRemote->name);
         }
     }
-    fclose(f1);
+    pclose(f1);
     
     return head;
 }
@@ -426,7 +426,7 @@ int CanMacroTune(void) {
         break;
         
     }
-    fclose(f1);
+    pclose(f1);
 
     return result;
 }
