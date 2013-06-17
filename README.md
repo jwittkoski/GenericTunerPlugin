@@ -58,9 +58,10 @@ A more complex `gentuner` might report `OK` for `CAN_TUNE`, and then send each d
 
 ##Installation
 
-###Building from source _(optional)_
+###Building
 
 Once you have gcc installed, just:
+
     make
 
 And you should have a `GenericTunerPlugin.so`.
