@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# gentuner.IPSTB
+# GenericTunerPlugin to IP enabled STB Connector
+#
+# See gentuner.README for details on gentuner
+#
+# This script proxies commands from the Generic Tuner Plugin
+# to an IP enabled STB running a web server. 
+# This was tested to work on a Cisco Explorer 4642hdc (running an "ODN STB WebServer").
+# I wasnt able to find an http method to power on the STB to ensure it's up.
+# 
+# It has a hard coded IP for the STB that needs to be updated for your setup, and 
+# which you should probably hard code wherever you run DHCP (router, etc).
+#
+
+CMD=$1
+REMOTE=$2
+KEY=$3
+CHANNEL=$3
+
+if [ "$CMD" = "REMOTES" ]; then
+    echo "STB1"
+elif [ "$CMD" = "KEYS" ]; then
+    echo "not required"
+elif [ "$CMD" = "SEND" ]; then
+    echo "not required"
+    exit 1
+elif [ "$CMD" = "TUNE" ]; then
+    #wget "http://$REMOTE/RemoteControl?Numbers=$3&EnterNumber=Submit" > /dev/null 2>&1
+    if [ "$REMOTE" == "STB1" ]; then
+	IP="192.168.100.100"
+    fi
+    wget "http://$IP/RemoteControl?Numbers=$3&EnterNumber=Submit" > /dev/null 2>&1
+elif [ "$CMD" = "CAN_TUNE" ]; then
+    echo "OK"
+else
+    exit 1
+fi
