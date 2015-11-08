@@ -55,6 +55,8 @@ void PlayCommand (int,remote *remote, unsigned char *name, int tx_repeats);
 void FreeRemotes(remote **head);
 void DumpRemotes(remote *head);
 
+void SetRemoteName(char *name);
+
 #ifdef __cplusplus
 }
 #endif

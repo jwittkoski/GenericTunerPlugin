@@ -74,7 +74,13 @@ void _log(int priority, char *fmt, ...) {
     if ( priority > currentLogLevel ) return; 
 
     logfile = fopen(LOG_FILE, "a+");
-    if (logfile == NULL) return;
+    if (logfile == NULL) {
+        va_start(ap, fmt);
+        vprintf(fmt, ap);
+        va_end(ap);
+        printf("\n");
+    	return;
+    }
 
     time(&now);
     timeinfo = localtime(&now);
@@ -443,4 +449,8 @@ void MacroTune(int devHandle, int channel) {
     } else {
         _log_debug("MacroTune: Executed TUNE command without error: %s", cmd);
     }
+}
+
+void SetRemoteName(char *name) {
+	strncpy(loadedDevName, name, sizeof(loadedDevName));
 }
