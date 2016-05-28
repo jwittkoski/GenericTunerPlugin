@@ -60,7 +60,15 @@ A more complex `gentuner` might report `OK` for `CAN_TUNE`, and then send each d
 
 ###Building
 
-Once you have gcc installed, just:
+#### For SageTV 7
+
+You'll need `gcc` and `make` installed on your build host.
+
+If you are compiling on a 64 bit Ubuntu distribution you will need to install the gcc-multilib package to build 32 bit executables:
+
+    apt-get install gcc-multilib
+
+Once you have the build tools installed, just:
 
     make
 
