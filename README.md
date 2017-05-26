@@ -1,6 +1,6 @@
-#A Generic Tuner Plugin for SageTV
+# A Generic Tuner Plugin for SageTV
 
-##Description
+## Description
 
 The Generic Tuner Plugin is a tuning plugin for SageTV.
 
@@ -10,7 +10,7 @@ Currently it has only been tested on Linux, but may work on the other platforms 
 
 The plugin acts as a passthru to a script or program called `gentuner`. `gentuner` can be written in whatever language you desire. It needs to accept several simple arguments on the command line and return results on STDOUT. gentuner is responsible for handing off the actual tuning work to the appropriate software (LIRC, `6200ch`, `panelctl`, etc).
 
-##gentuner
+## gentuner
 
 You must create a `gentuner` script that is appropriate for your setup.
 
@@ -39,7 +39,7 @@ A "remote" need not be a physical remote. It merely refers to the device or mech
 
 Note that currently _remote_, _key_, and _channel_ are strings that are expected to have no whitespace in them. For example "FiOS-TV-1" is a valid remote name, whereas "FiOS TV 1" is not. This limitation may be fixed in the future.
 
-###Tuning methods
+### Tuning methods
 The plugin supports two methods for tuning:
  * Macro Tuning - The plugin will call `gentuner` with the full channel number (i.e. `TUNE 123` for channel "123") and expect `gentuner` will do everything necessary tune the recording device to that channel.
  * Keypress - The plugin will issue a `SEND` command for each keypress (i.e. `SEND _remote_ 1` then `SEND _remote_ 2` then `SEND _remote_ 3` for channel "123") and expect that each keypress is sent to the recording device.
@@ -56,9 +56,9 @@ A `gentuner` script can be simple or complex. A simple script might be a thin tr
 
 A more complex `gentuner` might report `OK` for `CAN_TUNE`, and then send each digit individually so that you can control the timing between digits more precisely. Or you might want add code to do something important for your setup before or after each tune. See `gentuner.CUSTOM` for a more complex example.
 
-##Installation
+## Installation
 
-###Building
+### Building
 
 #### For SageTV 7
 
@@ -74,7 +74,7 @@ Once you have the build tools installed, just:
 
 And you should have a `GenericTunerPlugin.so`.
 
-###Install the plugin
+### Install the plugin
 
 *IMPORTANT NOTE*: After shutting down the SageTV process, always create a backup copy of your Sage.properties file before making any changes! If you make any changes to Sage.properties that break your setup, you can always revert to the backup copy.
 
@@ -123,12 +123,12 @@ And you should have a `GenericTunerPlugin.so`.
 
 Note: Currently debugging is enabled and lots of stuff will get logged to `/opt/sagetv/server/gentuner.log`. You can disable that in the source if desired. An option may be added later.
 
-##History
+## History
 The Generic Tuner Plugin is based on [MultiDCTTunerDLL](http://sourceforge.net/projects/multidcttuner/) which is Copyright (C) 2004 Sean Newman and was licensed under the GPLv2 license.
 
 This code was written and/or modified by by Jim Paris, Frey Technologies LLC, Sean Newman, Sean Stuckless, and John P. Wittkoski.
 
 Thanks to Jerry Fiddler for the `gentuner.PANELCTL` script and the changes he made to `panelctl` to support multiple STBs.
 
-##Developer Details
+## Developer Details
 _Tidbits about why the plugin does what it does will be added as time permits._
