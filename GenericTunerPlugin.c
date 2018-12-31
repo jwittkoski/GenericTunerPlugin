@@ -79,7 +79,7 @@ void _log(int priority, char *fmt, ...) {
         vprintf(fmt, ap);
         va_end(ap);
         printf("\n");
-    	return;
+        return;
     }
 
     time(&now);
@@ -452,5 +452,5 @@ void MacroTune(int devHandle, int channel) {
 }
 
 void SetRemoteName(char *name) {
-	strncpy(loadedDevName, name, sizeof(loadedDevName));
+    strncpy(loadedDevName, name, sizeof(loadedDevName));
 }
