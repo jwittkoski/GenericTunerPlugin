@@ -72,7 +72,7 @@ Once you have gcc installed, just:
 
 And you should have a `GenericTunerPlugin.so`.
 
-#### For SageTV pre-9
+#### For earlier versions of SageTV which require a 32 bit plugin
 
 If you need to build a 32 bit version of the plugin for a SageTV version earlier than 9, change the `-m64` to `-m32` in the Makefile.
 
