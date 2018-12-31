@@ -60,7 +60,21 @@ A more complex `gentuner` might report `OK` for `CAN_TUNE`, and then send each d
 
 ### Building
 
-#### For SageTV 7
+#### For SageTV 9
+
+SageTV 9 is released as 64 bit only, so the Makefile only supports building a 64 bit plugin.
+
+You'll need `gcc` and `make` installed on your build host.
+
+Once you have gcc installed, just:
+
+    make
+
+And you should have a `GenericTunerPlugin.so`.
+
+#### For SageTV pre-9
+
+If you need to build a 32 bit version of the plugin for a SageTV version earlier than 9, change the `-m64` to `-m32` in the Makefile.
 
 You'll need `gcc` and `make` installed on your build host.
 
