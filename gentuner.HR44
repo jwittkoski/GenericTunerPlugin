@@ -1,0 +1,128 @@
+#!/usr/bin/perl
+
+# Contributed by turak on the SageTV Forums:
+# https://forums.sagetv.com/forums/showthread.php?p=580159&postcount=15
+
+#  This script controls my DirecTV Genie (hr44) STB.  Just update the IP addess 
+#  below and you should be good to go.  You can also turn off debug if you don't
+#  want the script to write to a log file.  
+
+
+use strict;
+
+
+#  List your STB's and IP addresses below.  I only have one STB to control so
+#  I gave these three the same address while I tested multi-box support. Feel
+#  free to comment out and tuners that you don't need.
+
+my %stbs = (
+	'DirecTV-Tuner-1' => '192.168.1.79',
+	'DirecTV-Tuner-2' => '192.168.1.79',
+	'DirecTV-Tuner-3' => '192.168.1.79',
+);
+
+my $log = '/var/log/gentuner.log';   	#  Location of logfile.
+my $debug = 1;  			#  Set to 1 to turn logging on.
+					#  Set to 0 to turn logging off.
+
+my $micro_send = 0;   		        #  Set to 1 to send one digit at a time
+					#  to the STB instead of the whole channel.
+					#  Set to 0 to send the whole channel number.
+
+
+my $command = $ARGV[0];
+my $remote = $ARGV[1];
+my $channel = $ARGV[2];
+
+
+&logit( "Received COMMAND = $command | REMOTE = $remote | CHANNEL = $channel" );
+&list_keys if ( $command eq "KEYS" );
+&send_keys( $channel ) if ( $command eq "TUNE" );
+&list_tuners if ( $command eq "REMOTES" );
+print "OK\n" if ( $command eq "CAN_TUNE" );
+
+
+sub list_tuners()
+{
+  foreach my $tuner ( keys %stbs )
+  {
+    print $tuner . "\n";
+  }
+}
+
+
+sub list_keys()
+{
+  my @keys = (
+	'1', '2', '3', '4',
+	'5', '6', '7', '8',
+	'9', '0', 'OK'
+	     );
+
+  foreach ( @keys )
+  {
+    print "$_\n";
+  }
+}
+	
+sub send_keys()
+{
+  my $keys = shift;
+  chomp $keys;
+  &logit( "$keys" );
+
+  open ( CURL, "curl -s $stbs{$remote}:8080/remote/processKey?key=poweron |" );
+    while (<CURL>)
+    {
+      my $output = $_;
+      chomp $output;
+      &logit( $output );
+    }
+
+  if ( $micro_send )
+  {
+    foreach my $char ( split //, $keys ) 
+    {
+      if ( $char =~ /\d/ ) 
+      {
+        open ( CURL, "curl -s $stbs{$remote}:8080/remote/processKey?key=$char |" );
+        while (<CURL>) 
+        {
+          my $output = $_;
+          chomp $output;
+          &logit( $output );
+        }
+      }
+    }
+  } else {
+    open ( CURL, "curl -s $stbs{$remote}:8080/tv/tune?major=$channel |" );
+    while (<CURL>)
+    {
+      my $output = $_;
+      chomp $output;
+      &logit( $output );
+    }
+  }
+}
+
+sub logit()
+{
+  my $message = shift;
+  my $timestamp = &getLoggingTime();
+  if ( $debug ) 
+  {
+    open ( LOG, ">> $log" );
+    print LOG "[$timestamp]\t$message\n";
+    close LOG;
+  }
+}
+
+
+sub getLoggingTime() 
+{
+
+  my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+  my $nice_timestamp = sprintf ( "%04d%02d%02d %02d:%02d:%02d",
+                                   $year+1900,$mon+1,$mday,$hour,$min,$sec);
+  return $nice_timestamp;
+}
