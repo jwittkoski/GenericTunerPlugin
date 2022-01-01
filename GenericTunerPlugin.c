@@ -47,7 +47,6 @@
 #endif
 
 #define PLUGIN_VERSION "1.2"
-#define PLUGIN_REVISION "1"
 
 // used by the macro tune to hold the command of the last loaded remote
 static char loadedDevName[256];
@@ -157,17 +156,15 @@ const char* DeviceName() {
 // Open the device
 // This is a leftover from the original tuning plugin which
 // assumed that a serial port was used for tuning.
-// So here we just log the current version and revision number.
+// So here we just log the current version number.
 // Note: The int value that is returned here is passed as
 //       "devHandle" to several other routines by Sage.
 //
 int OpenDevice(int ComPort) {
-    int revision = 0;
-    char *v_loc = strchr(PLUGIN_REVISION, ' ');
-    if ( v_loc != NULL ) sscanf(v_loc+1, "%9d", &revision);
-    _log_info("%s, Version %s, Revision %i", DEVICE_NAME, PLUGIN_VERSION, revision);
+    _log_info("%s, Version %s", DEVICE_NAME, PLUGIN_VERSION);
 
     _log_debug("OpenDevice: %d", ComPort);
+
     return 1;
 }
 
