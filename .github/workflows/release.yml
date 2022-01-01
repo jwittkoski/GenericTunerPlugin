@@ -20,7 +20,7 @@ jobs:
         draft: false
         prerelease: false
         #release_name: ${{ steps.version.outputs.version }}
-        #tag_name: ${{ github.ref }}
+        tag_name: ${{ github.ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
 
