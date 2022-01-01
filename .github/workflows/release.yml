@@ -2,7 +2,7 @@ name: Generic Tuner Plugin Release
 
 on:
   push:
-    branches: [ 0.[0-9]+ ]
+    tags: 0.[0-9]+
 
 jobs:
   build:
