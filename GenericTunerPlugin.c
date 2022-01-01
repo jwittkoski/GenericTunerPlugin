@@ -46,7 +46,7 @@
 #define CMD_PATH "/opt/sagetv/server/gentuner"
 #endif
 
-#define PLUGIN_VERSION "1.2"
+#define PLUGIN_VERSION "1.4.0"
 
 // used by the macro tune to hold the command of the last loaded remote
 static char loadedDevName[256];
