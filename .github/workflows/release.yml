@@ -7,9 +7,32 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
 
     steps:
     - uses: actions/checkout@v2
     - name: make
       run: make
+    - name: release
+      uses: actions/create-release@v1
+      id: create_release
+      with:
+        draft: false
+        prerelease: false
+        #release_name: ${{ steps.version.outputs.version }}
+        #tag_name: ${{ github.ref }}
+
+#  - name: version
+#    run: echo "::set-output name=version::$(./bin/azblogfilter --version)"
+#    id: version
+#  - name: release
+#    uses: actions/create-release@v1
+#    id: create_release
+#    with:
+#      draft: false
+#      prerelease: false
+#      release_name: ${{ steps.version.outputs.version }}
+#      tag_name: ${{ github.ref }}
+#      body_path: CHANGELOG.md
+#    env:
+#      GITHUB_TOKEN: ${{ github.token }}
