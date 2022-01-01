@@ -1,4 +1,4 @@
-name: Generic Tuner Plugin Release
+name: gentuner
 
 on:
   push:
