@@ -20,3 +20,18 @@ clean:
 
 realclean: clean
 	rm -f TestTuner
+	rm -rf release/
+
+release: all
+	mkdir -p release/irtunerplugins/gentuner/samples
+	mkdir -p release/irtunerplugins/gentuner/doc
+	cp GenericTunerPlugin.so release/irtunerplugins/
+	cp gentuner.CUSTOM release/irtunerplugins/gentuner/samples/
+	cp gentuner.HR44 release/irtunerplugins/gentuner/samples/
+	cp gentuner.IPSTB release/irtunerplugins/gentuner/samples/
+	cp gentuner.LIRC release/irtunerplugins/gentuner/samples/
+	cp gentuner.PANELCTL release/irtunerplugins/gentuner/samples/
+	cp README.md release/irtunerplugins/gentuner/doc/
+	cp README.txt release/irtunerplugins/gentuner/doc/
+	cd release/
+	tar cvzf gentuner-VERSION.linux-amd64.zip ./irtunerplugins/

@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: make
-      run: make
+      run: make release
     - name: release
       uses: actions/create-release@v1
       id: create_release
@@ -29,10 +29,9 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./GenericTunerPlugin.so
-        asset_name: gentuner.linux-amd64.zip
-        asset_content_type: application/zip
-
+        asset_path: ./
+        asset_name: gentuner-VERSION.linux-amd64.zip
+        asset_content_type: application/x-gzip
 #jobs:
 #  build:
 #    name: Create Release
