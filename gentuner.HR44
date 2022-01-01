@@ -3,9 +3,9 @@
 # Contributed by turak on the SageTV Forums:
 # https://forums.sagetv.com/forums/showthread.php?p=580159&postcount=15
 
-#  This script controls my DirecTV Genie (hr44) STB.  Just update the IP addess 
+#  This script controls my DirecTV Genie (hr44) STB.  Just update the IP addess
 #  below and you should be good to go.  You can also turn off debug if you don't
-#  want the script to write to a log file.  
+#  want the script to write to a log file.
 
 
 use strict;
@@ -16,18 +16,18 @@ use strict;
 #  free to comment out and tuners that you don't need.
 
 my %stbs = (
-	'DirecTV-Tuner-1' => '192.168.1.79',
-	'DirecTV-Tuner-2' => '192.168.1.79',
-	'DirecTV-Tuner-3' => '192.168.1.79',
+        'DirecTV-Tuner-1' => '192.168.1.79',
+        'DirecTV-Tuner-2' => '192.168.1.79',
+        'DirecTV-Tuner-3' => '192.168.1.79',
 );
 
-my $log = '/var/log/gentuner.log';   	#  Location of logfile.
-my $debug = 1;  			#  Set to 1 to turn logging on.
-					#  Set to 0 to turn logging off.
+my $log = '/var/log/gentuner.log';      #  Location of logfile.
+my $debug = 1;                          #  Set to 1 to turn logging on.
+                                        #  Set to 0 to turn logging off.
 
-my $micro_send = 0;   		        #  Set to 1 to send one digit at a time
-					#  to the STB instead of the whole channel.
-					#  Set to 0 to send the whole channel number.
+my $micro_send = 0;                     #  Set to 1 to send one digit at a time
+                                        #  to the STB instead of the whole channel.
+                                        #  Set to 0 to send the whole channel number.
 
 
 my $command = $ARGV[0];
@@ -54,17 +54,17 @@ sub list_tuners()
 sub list_keys()
 {
   my @keys = (
-	'1', '2', '3', '4',
-	'5', '6', '7', '8',
-	'9', '0', 'OK'
-	     );
+        '1', '2', '3', '4',
+        '5', '6', '7', '8',
+        '9', '0', 'OK'
+             );
 
   foreach ( @keys )
   {
     print "$_\n";
   }
 }
-	
+
 sub send_keys()
 {
   my $keys = shift;
@@ -81,12 +81,12 @@ sub send_keys()
 
   if ( $micro_send )
   {
-    foreach my $char ( split //, $keys ) 
+    foreach my $char ( split //, $keys )
     {
-      if ( $char =~ /\d/ ) 
+      if ( $char =~ /\d/ )
       {
         open ( CURL, "curl -s $stbs{$remote}:8080/remote/processKey?key=$char |" );
-        while (<CURL>) 
+        while (<CURL>)
         {
           my $output = $_;
           chomp $output;
@@ -109,7 +109,7 @@ sub logit()
 {
   my $message = shift;
   my $timestamp = &getLoggingTime();
-  if ( $debug ) 
+  if ( $debug )
   {
     open ( LOG, ">> $log" );
     print LOG "[$timestamp]\t$message\n";
@@ -118,7 +118,7 @@ sub logit()
 }
 
 
-sub getLoggingTime() 
+sub getLoggingTime()
 {
 
   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);

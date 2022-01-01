@@ -4,29 +4,29 @@
 
 struct pattern
 {
-	unsigned bit_length;
-	unsigned length;
-	char r_flag;
-	unsigned char *bytes;
-	struct pattern *next;
+    unsigned bit_length;
+    unsigned length;
+    char r_flag;
+    unsigned char *bytes;
+    struct pattern *next;
 };
-typedef struct pattern pattern;	
+typedef struct pattern pattern;
 
-struct command 
+struct command
 {
-	unsigned char *name;
-	struct pattern *pattern;
-	struct command *next;
-};      	
+    unsigned char *name;
+    struct pattern *pattern;
+    struct command *next;
+};
 typedef struct command command;
 
-struct remote 
+struct remote
 {
-	unsigned char *name;
-	unsigned long carrier_freq;
-	unsigned bit_time;
-	struct command *command;
-	struct remote *next;
+    unsigned char *name;
+    unsigned long carrier_freq;
+    unsigned bit_time;
+    struct command *command;
+    struct remote *next;
 };
 typedef struct remote remote;
 

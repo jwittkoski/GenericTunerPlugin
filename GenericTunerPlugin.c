@@ -1,29 +1,29 @@
 //
 // Generic Tuner Plugin for SageTV
-// 
+//
 // The Generic Tuner Plugin is based on MultiDCTTunerDLL which is
 // Copyright (C) 2004 Sean Newman <snewman@sourceforge.net>
 // and was licensed under the GPLv2 license.
-// 
+//
 // This code was written and/or modified by by Jim Paris <jim@jtan.com>,
 // Frey Technologies LLC, Sean Newman <snewman@sourceforge.net>,
 // Sean Stuckless, and John Wittkoski.
-// 
+//
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License as published by the
 // Free Software Foundation; either version 2 of the License, or (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 // or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License along with
 // this program; if not, write to the
 // Free Software Foundation, Inc.
 // 59 Temple Place
 // Suite 330
 // Boston, MA 02111-1307 USA
-// 
+//
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -71,7 +71,7 @@ void _log(int priority, char *fmt, ...) {
     struct tm *timeinfo;
     FILE *logfile;
 
-    if ( priority > currentLogLevel ) return; 
+    if ( priority > currentLogLevel ) return;
 
     logfile = fopen(LOG_FILE, "a+");
     if (logfile == NULL) {
@@ -102,8 +102,8 @@ void _log(int priority, char *fmt, ...) {
             break;
         default:
             break;
-    } 
-  
+    }
+
     va_start(ap, fmt);
     vfprintf(logfile, fmt, ap);
     va_end(ap);
@@ -123,7 +123,7 @@ void _log(int priority, char *fmt, ...) {
 // simple method to allocate and copy string
 char *alloc_string(char *str) {
     if ( str == NULL ) return NULL;
-    char *newStr = malloc(strlen(str)+1); 
+    char *newStr = malloc(strlen(str)+1);
     strcpy((char *)newStr, (const char *)str);
     return newStr;
 }
@@ -158,7 +158,7 @@ const char* DeviceName() {
 // This is a leftover from the original tuning plugin which
 // assumed that a serial port was used for tuning.
 // So here we just log the current version and revision number.
-// Note: The int value that is returned here is passed as 
+// Note: The int value that is returned here is passed as
 //       "devHandle" to several other routines by Sage.
 //
 int OpenDevice(int ComPort) {
@@ -225,8 +225,8 @@ void chomp (char* s) {
 int LoadRemoteKeys(struct remote *Remote) {
     char buf[1024];
     char cmd[1024];
-    
-    snprintf(cmd, sizeof(cmd), "%s KEYS %s", CMD_PATH, Remote->name);   
+
+    snprintf(cmd, sizeof(cmd), "%s KEYS %s", CMD_PATH, Remote->name);
     _log_debug("LoadRemoteKeys: Using command: %s", cmd);
 
     FILE *f1 = popen(cmd, "r");
@@ -237,20 +237,20 @@ int LoadRemoteKeys(struct remote *Remote) {
 
     command *head = NULL;
     command *newCmd;
-    
+
     while (fgets(buf, sizeof(buf), f1)) {
         if ( buf == NULL ) break;
         chomp(buf);
-        
+
         newCmd = CreateCommand(alloc_string(buf));
-        
+
         AddCommand(newCmd, &head);
     }
-    
+
     pclose(f1);
 
     Remote->command = head;
-    
+
     return 0;
 }
 
@@ -267,7 +267,7 @@ int LoadRemoteKeys(struct remote *Remote) {
 remote* LoadRemotes(const char* pszPathName) {
     char buf[1024];
     char cmd[1024];
-    
+
     remote *head = NULL;
 
     if ( pszPathName == NULL ) {
@@ -276,7 +276,7 @@ remote* LoadRemotes(const char* pszPathName) {
         _log_debug("LoadRemotes: Remote: %s", pszPathName);
     }
 
-    snprintf(cmd, sizeof(cmd), "%s REMOTES", CMD_PATH);   
+    snprintf(cmd, sizeof(cmd), "%s REMOTES", CMD_PATH);
     _log_debug("LoadRemotes: Using command: %s", cmd);
 
     FILE *f1 = popen(cmd, "r");
@@ -284,21 +284,21 @@ remote* LoadRemotes(const char* pszPathName) {
         _log_error("LoadRemotes: Failed to execute REMOTES command: %s", cmd);
         return NULL;
     }
-    
+
     remote *newRemote;
     while (fgets(buf, sizeof(buf), f1)) {
         if ( buf == NULL ) break;
-        
+
         // eat the newline
         chomp(buf);
         _log_debug("LoadRemotes: Found Remote: %s", buf);
-        
+
         // each line contains one and only one remote name
         newRemote = CreateRemote((unsigned char *)alloc_string(buf));
-        
+
         // load the remote keys
         LoadRemoteKeys(newRemote);
-        
+
         // if pszPathName is defined, only add that remote to the list
         if ( pszPathName ) {
             if ( 0 == strcmp((const char *)pszPathName,(const char *)newRemote->name) ) {
@@ -315,7 +315,7 @@ remote* LoadRemotes(const char* pszPathName) {
         }
     }
     pclose(f1);
-    
+
     return head;
 }
 
@@ -350,7 +350,7 @@ void PlayCommand(int devHandle, remote *remote, unsigned char *name, int tx_repe
         return;
     }
 
-    snprintf(cmd, sizeof(cmd), "%s SEND %s %s", CMD_PATH, remote->name, name);   
+    snprintf(cmd, sizeof(cmd), "%s SEND %s %s", CMD_PATH, remote->name, name);
     _log_debug("PlayCommand: Using command: %s", cmd);
     _log_info("PlayCommand: Remote: %s, Key: %s", remote->name, name);
 
@@ -407,8 +407,8 @@ void DumpRemotes(remote *head) {
 int CanMacroTune(void) {
     char buf[1024];
     char cmd[1024];
-    
-    snprintf(cmd, sizeof(cmd), "%s CAN_TUNE %s", CMD_PATH, loadedDevName);   
+
+    snprintf(cmd, sizeof(cmd), "%s CAN_TUNE %s", CMD_PATH, loadedDevName);
     _log_debug("CanMacroTune: Using command: %s", cmd);
 
     FILE *f1 = popen(cmd, "r");
@@ -416,7 +416,7 @@ int CanMacroTune(void) {
         _log_error("CanMacroTune: Failed to execute CAN_TUNE command: %s", cmd);
         return 0;
     }
-    
+
     int result = 0;
     while (fgets(buf, sizeof(buf), f1)) {
         if ( buf == NULL ) break;
@@ -430,7 +430,7 @@ int CanMacroTune(void) {
         }
 
         break;
-        
+
     }
     pclose(f1);
 
@@ -440,7 +440,7 @@ int CanMacroTune(void) {
 void MacroTune(int devHandle, int channel) {
     char cmd[1024];
 
-    snprintf(cmd, sizeof(cmd), "%s TUNE %s %d", CMD_PATH, loadedDevName, channel);   
+    snprintf(cmd, sizeof(cmd), "%s TUNE %s %d", CMD_PATH, loadedDevName, channel);
     _log_debug("MacroTune: Using command: %s", cmd);
     _log_info("MacroTune: Remote: %s, Channel: %d", loadedDevName, channel);
 

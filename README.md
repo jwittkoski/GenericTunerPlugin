@@ -95,7 +95,7 @@ And you should have a `GenericTunerPlugin.so`.
 * Put the plugin in the right location
 
         cp GenericTunerPlugin.so /opt/sagetv/server/irtunerplugins/
- 
+
 * Examine the sample `gentuner.*` scripts to see which one most closely fits in with your tuning needs, and make a copy. For example:
 
         cp gentuner.LIRC gentuner.LOCAL
@@ -112,18 +112,18 @@ And you should have a `GenericTunerPlugin.so`.
   or
 
         gentuner.LOCAL CAN_TUNE REMOTE_NAME_HERE
-    
+
   or
 
         gentuner.LOCAL SEND REMOTE_NAME_HERE 1
         gentuner.LOCAL SEND REMOTE_NAME_HERE 2
         gentuner.LOCAL SEND REMOTE_NAME_HERE 3
         gentuner.LOCAL SEND REMOTE_NAME_HERE OK
-        
+
   or
-  
+
         gentuner.LOCAL TUNE REMOTE_NAME_HERE 123
-  
+
   etc.
 
 * Copy your version of `gentuner` to where the plugin expects it. Note that currently the Generic Tuner Plugin has the path to `gentuner` hardcoded to `/opt/sagetv/server/gentuner`. You can create a symlink or recompile if you need to put the plugin elsewhere.

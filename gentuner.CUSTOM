@@ -29,8 +29,8 @@
 #    to be defined
 #  - Uses v4l2-ctl to reset the audio input of the
 #    PVR-500 related to the specified remote after each
-#    tune. (This was done because occasionally the 
-#    PVR-500 audio would drop out and reseting the 
+#    tune. (This was done because occasionally the
+#    PVR-500 audio would drop out and reseting the
 #    audio input at the beginning of a recording usually
 #    fixes the problem.
 #
@@ -53,8 +53,8 @@ my $command = $ARGV[0];
 my $remote = $ARGV[1];
 my $key = $ARGV[2];
 my $channel = $ARGV[2];
-my $delay_between_keys  = 300000;	# in microseconds
-my $delay_between_tunes = 1000000;	# in microseconds
+my $delay_between_keys  = 300000;   # in microseconds
+my $delay_between_tunes = 1000000;  # in microseconds
 my $device_map = { 'FiOS-TV-1' => 0,
                    'FiOS-TV-2' => 2,
                    'FiOS-TV-3' => 4,
@@ -62,7 +62,7 @@ my $device_map = { 'FiOS-TV-1' => 0,
 
 my $transmitter = "15";
 if ( $remote =~ /-([1-4])$/ ) {
-    $transmitter = ( 2 ** ( $1 - 1 ) ); 
+    $transmitter = ( 2 ** ( $1 - 1 ) );
 }
 
 my $raw_device = "";

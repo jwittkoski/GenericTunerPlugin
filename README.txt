@@ -1,5 +1,5 @@
 The Generic Tuner Plugin is a tuning plugin for SageTV.
-It has only been tested on Linux, but may work on the other 
+It has only been tested on Linux, but may work on the other
 platforms supported by SageTV with modifications.
 
 The Generic Tuner Plugin was created to move the complexities
@@ -40,7 +40,7 @@ TUNE remote channel
         How exactly you tune depends on your setup.
 CAN_TUNE remote
     Action for gentuner to take:
-        returns string "OK" if "remote" can tune by channel (i.e. 
+        returns string "OK" if "remote" can tune by channel (i.e.
         macro tune) instead of using individual keys
 
 Note that currently "remote", "key", and "channel" are strings
@@ -61,7 +61,7 @@ Sage itself. Generally if you use a tuning method that deals
 with key presses, like LIRC, this is the path for you.
 
 A gentuner script can be simple or complex. A simple script might
-be a thin translation layer to LIRC (for IR based tuning) or 6200ch 
+be a thin translation layer to LIRC (for IR based tuning) or 6200ch
 or panelctl (for FireWire tuning). See gentuner.LIRC for a simple
 example.
 

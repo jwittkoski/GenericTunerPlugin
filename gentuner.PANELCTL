@@ -6,13 +6,13 @@
 # This script is meant to be called by the GenericTunerPlugin for sagetv.  It
 # calls panelctl, a firewire tuning program, to tune STBs in the device_map list.
 # In order to use this, device_map MUST be modified to reflect the names and GUIDs
-# of the specific STBs to be controlled.  The GUIDs can be learned with plugreport, 
+# of the specific STBs to be controlled.  The GUIDs can be learned with plugreport,
 # and with panelctl -v.
 #
 # This program requires panelctl 0.2 or later.  To confirm, 'man panelctl' should
-# indicate that the -g switch is available.  
+# indicate that the -g switch is available.
 #
-# In addition to the standard calling sequence defined in gentuner.README, this 
+# In addition to the standard calling sequence defined in gentuner.README, this
 # program accepts two switches.  They are only useful for testing, and only modify
 # the behavior of the TUNE command.
 #
@@ -65,7 +65,7 @@ my $key = $ARGV[2];
 my $channel = $ARGV[2];
 
 if ( $command eq "REMOTES" ) {
-    # output a list of remotes that we know how to address 
+    # output a list of remotes that we know how to address
     foreach (keys(%device_map)) {
         print "$_\n";
     }
