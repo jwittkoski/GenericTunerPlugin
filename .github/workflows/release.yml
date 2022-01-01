@@ -23,6 +23,12 @@ jobs:
         tag_name: ${{ github.ref }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: so-file
+        path: |
+          GenericTunerPlugin.so
 
 #jobs:
 #  build:
