@@ -1,0 +1,15 @@
+name: Generic Tuner Plugin Release
+
+on:
+  push:
+    branches: [ 0.[0-9]+ ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: make
+      run: make
