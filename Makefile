@@ -1,4 +1,6 @@
-CC=gcc
+VERSION = 1.4.0
+
+CC = gcc
 CFLAGS = -m64 -fPIC -D_FILE_OFFSET_BITS=64
 
 all: GenericTunerPlugin.so TestTuner
@@ -22,6 +24,9 @@ realclean: clean
 	rm -f TestTuner
 	rm -rf release/
 
+version:
+	@echo $(VERSION)
+
 release: all
 	mkdir -p release/irtunerplugins/gentuner/samples
 	mkdir -p release/irtunerplugins/gentuner/doc
@@ -33,4 +38,4 @@ release: all
 	cp gentuner.PANELCTL release/irtunerplugins/gentuner/samples/
 	cp README.md release/irtunerplugins/gentuner/doc/
 	cp README.txt release/irtunerplugins/gentuner/doc/
-	cd release/ && tar cvzf gentuner-VERSION.linux-amd64.zip ./irtunerplugins/
+	cd release/ && tar cvzf gentuner-$(VERSION).linux-amd64.zip ./irtunerplugins/
