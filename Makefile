@@ -24,7 +24,8 @@ realclean: clean
 	rm -f TestTuner
 	rm -rf release/
 
-release: all
+#release: all
+release:
 	mkdir -p release/irtunerplugins/gentuner/samples
 	mkdir -p release/irtunerplugins/gentuner/doc
 	cp GenericTunerPlugin.so release/irtunerplugins/
