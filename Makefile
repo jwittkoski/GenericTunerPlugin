@@ -1,4 +1,4 @@
-RELEASE_VERSION ?= $(shell git describe)
+RELEASE_VERSION ?= $(shell git describe --tags)
 
 CC = gcc
 CFLAGS = -m64 -fPIC -D_FILE_OFFSET_BITS=64
@@ -24,8 +24,7 @@ realclean: clean
 	rm -f TestTuner
 	rm -rf release/
 
-#release: all
-release:
+release: all
 	mkdir -p release/irtunerplugins/gentuner/samples
 	mkdir -p release/irtunerplugins/gentuner/doc
 	cp GenericTunerPlugin.so release/irtunerplugins/
