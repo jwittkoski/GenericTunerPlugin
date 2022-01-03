@@ -60,7 +60,7 @@ A more complex `gentuner` might report `OK` for `CAN_TUNE`, and then send each d
 
 ### Pre-built Binary
 
-Release tarballs pre-compiled for Ubuntu 18.04 (should work on 16.x and 20.x as well) are available in [Releases](https://github.com/jwittkoski/GenericTunerPlugin/releases)
+Release tarballs pre-compiled for Ubuntu 18.04 (works on 16.x and 20.x as well) are available in [Releases](https://github.com/jwittkoski/GenericTunerPlugin/releases)
 
 ### Manual Build
 
@@ -76,8 +76,6 @@ And you should have a `GenericTunerPlugin.so`.
 
 ## Installation
 
-*IMPORTANT NOTE*: After shutting down the SageTV process, always create a backup copy of your Sage.properties file before making any changes! If you make any changes to Sage.properties that break your setup, you can always revert to the backup copy.
-
 ### Install plugin from the official release
 
     cd /tmp
@@ -91,7 +89,9 @@ And you should have a `GenericTunerPlugin.so`.
 
         cp GenericTunerPlugin.so /opt/sagetv/server/irtunerplugins/
 
-### Configuration
+## Configuration
+
+*IMPORTANT NOTE*: After shutting down the SageTV process, always create a backup copy of your Sage.properties file before making any changes! If you make any changes to Sage.properties that break your setup, you can always revert to the backup copy.
 
 * Examine the sample `gentuner.*` scripts to see which one most closely fits in with your tuning needs, and make a copy. For example:
 
