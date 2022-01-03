@@ -3,8 +3,6 @@
 # gentuner.LIRC
 # GenericTunerPlugin to LIRC Connector
 #
-# See gentuner.README for details on gentuner
-#
 # This script proxies commands from the Generic Tuner Plugin
 # to LIRC. If the remote name defined in the lircd.conf file
 # ends in "-N" (where N is 1, 2, 3 or 4), it will also
