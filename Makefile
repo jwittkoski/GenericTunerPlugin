@@ -35,4 +35,4 @@ release: all
 	cp gentuner.PANELCTL release/irtunerplugins/gentuner/samples/
 	cp README.md release/irtunerplugins/gentuner/doc/
 	cp README.txt release/irtunerplugins/gentuner/doc/
-	tar -c -v -z -C release -f gentuner-$(RELEASE_VERSION).linux-amd64.tgz ./irtunerplugins/
+	cd release && tar -c -v -z -f gentuner-$(RELEASE_VERSION).linux-amd64.tgz ./irtunerplugins/
