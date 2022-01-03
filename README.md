@@ -60,7 +60,7 @@ A more complex `gentuner` might report `OK` for `CAN_TUNE`, and then send each d
 
 ### Pre-built Binary
 
-Release tarballs pre-compiled for Ubuntu 18.04 (should work on 16.x and 20.x as well) are available in the [Releases](https://github.com/jwittkoski/GenericTunerPlugin/releases)
+Release tarballs pre-compiled for Ubuntu 18.04 (should work on 16.x and 20.x as well) are available in [Releases](https://github.com/jwittkoski/GenericTunerPlugin/releases)
 
 ### Manual Build
 
