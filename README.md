@@ -56,11 +56,13 @@ A `gentuner` script can be simple or complex. A simple script might be a thin tr
 
 A more complex `gentuner` might report `OK` for `CAN_TUNE`, and then send each digit individually so that you can control the timing between digits more precisely. Or you might want add code to do something important for your setup before or after each tune. See `gentuner.CUSTOM` for a more complex example.
 
-## Installation
+## Building
 
-### Building
+### Pre-built Binary
 
-#### For SageTV 9
+Release tarballs pre-compiled for Ubuntu 18.04 (should work on 16.x and 20.x as well) are available in the [Releases](https://github.com/jwittkoski/GenericTunerPlugin/releases)
+
+### Manual Build
 
 SageTV 9 is released as 64 bit only, so the Makefile only supports building a 64 bit plugin.
 
@@ -72,29 +74,24 @@ Once you have gcc installed, just:
 
 And you should have a `GenericTunerPlugin.so`.
 
-#### For earlier versions of SageTV which require a 32 bit plugin
+## Installation
 
-If you need to build a 32 bit version of the plugin for a SageTV version earlier than 9, change the `-m64` to `-m32` in the Makefile.
+### Install plugin from the official release
 
-You'll need `gcc` and `make` installed on your build host.
+    cd /tmp
+    curl -LO https://github.com/jwittkoski/GenericTunerPlugin/releases/download/1.4.0/gentuner-1.4.0.linux-amd64.tgz
+    cd /opt/sagetv/server
+    tar xvzf /tmp/gentuner-1.4.0.linux-amd64.tgz
 
-If you are compiling on a 64 bit Ubuntu distribution you will need to install the gcc-multilib package to build 32 bit executables:
-
-    apt-get install gcc-multilib
-
-Once you have the build tools installed, just:
-
-    make
-
-And you should have a `GenericTunerPlugin.so`.
-
-### Install the plugin
+### Install the plugin (from manual build)
 
 *IMPORTANT NOTE*: After shutting down the SageTV process, always create a backup copy of your Sage.properties file before making any changes! If you make any changes to Sage.properties that break your setup, you can always revert to the backup copy.
 
 * Put the plugin in the right location
 
         cp GenericTunerPlugin.so /opt/sagetv/server/irtunerplugins/
+
+### Configuration
 
 * Examine the sample `gentuner.*` scripts to see which one most closely fits in with your tuning needs, and make a copy. For example:
 
@@ -138,7 +135,7 @@ And you should have a `GenericTunerPlugin.so`.
 Note: Currently debugging is enabled and lots of stuff will get logged to `/opt/sagetv/server/gentuner.log`. You can disable that in the source if desired. An option may be added later.
 
 ## History
-The Generic Tuner Plugin is based on [MultiDCTTunerDLL](http://sourceforge.net/projects/multidcttuner/) which is Copyright (C) 2004 Sean Newman and was licensed under the GPLv2 license.
+The Generic Tuner Plugin is based on [MultiDCTTunerDLL](https://sourceforge.net/projects/multidcttuner/) which is Copyright (C) 2004 Sean Newman and was licensed under the GPLv2 license.
 
 This code was written and/or modified by by Jim Paris, Frey Technologies LLC, Sean Newman, Sean Stuckless, and John P. Wittkoski.
 
