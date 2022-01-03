@@ -76,6 +76,8 @@ And you should have a `GenericTunerPlugin.so`.
 
 ## Installation
 
+*IMPORTANT NOTE*: After shutting down the SageTV process, always create a backup copy of your Sage.properties file before making any changes! If you make any changes to Sage.properties that break your setup, you can always revert to the backup copy.
+
 ### Install plugin from the official release
 
     cd /tmp
@@ -84,8 +86,6 @@ And you should have a `GenericTunerPlugin.so`.
     tar xvzf /tmp/gentuner-1.4.0.linux-amd64.tgz
 
 ### Install the plugin (from manual build)
-
-*IMPORTANT NOTE*: After shutting down the SageTV process, always create a backup copy of your Sage.properties file before making any changes! If you make any changes to Sage.properties that break your setup, you can always revert to the backup copy.
 
 * Put the plugin in the right location
 
