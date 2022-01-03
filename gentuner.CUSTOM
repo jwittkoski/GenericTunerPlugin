@@ -5,34 +5,26 @@
 #
 # See gentuner.README for details on gentuner
 #
-# This is an example of a more complex working
-# gentuner script to demonstrate that you can
-# customize gentuner as needed for your setup.
-# This code is very specific to the tuners,
-# encoders, and hardware that was used
-# and will unlikely work for the general case.
+# This is an example of a more complex working gentuner script to
+# demonstrate that you can customize gentuner as needed for your setup.
+# This code is very specific to the tuners, encoders, and hardware that
+# was used and will unlikely work for the general case.
 #
 # It does several things:
-#  - Reports back to the plugin when asked that it
-#    supports three remotes.
-#  - Reports back to the plugin when asked that each
-#    remote has the keys 0-9 and "OK"
-#  - Reports back to the plugin when asked that it
-#    supports macro tuning, but when it actually does
-#    the tuning it sends each digit as an individual
-#    keypress. It also sends the "OK" keypress after
-#    all the digits are sent.
-#  - Uses the last digit of the remote name to enable
-#    only the correct emitter on the multi-emitter
-#    USB IR tuning device. (In this case, an Iguana IR)
-#  - Allows the delay between each digit and each tune
-#    to be defined
-#  - Uses v4l2-ctl to reset the audio input of the
-#    PVR-500 related to the specified remote after each
-#    tune. (This was done because occasionally the
-#    PVR-500 audio would drop out and reseting the
-#    audio input at the beginning of a recording usually
-#    fixes the problem.
+#  - Reports back to the plugin when asked that it supports three remotes.
+#  - Reports back to the plugin when asked that each remote has the
+#    keys 0-9 and "OK"
+#  - Reports back to the plugin when asked that it supports macro tuning,
+#    but when it actually does the tuning it sends each digit as an
+#    individual keypress. It also sends the "OK" keypress after all the
+#    digits are sent.
+#  - Uses the last digit of the remote name to enable only the correct emitter
+#    on the multi-emitter USB IR tuning device. (In this case, an Iguana IR)
+#  - Allows the delay between each digit and each tune to be defined
+#  - Uses v4l2-ctl to reset the audio input of the PVR-500 related to the
+#    specified remote after each tune. (This was done because occasionally
+#    the PVR-500 audio would drop out and reseting the audio input at the
+#    beginning of a recording usually fixes the problem.
 #
 # Copyright (c) 2009 John P. Wittkoski. All Rights Reserved.
 #

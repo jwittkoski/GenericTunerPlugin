@@ -141,5 +141,9 @@ This code was written and/or modified by by Jim Paris, Frey Technologies LLC, Se
 
 Thanks to Jerry Fiddler for the `gentuner.PANELCTL` script and the changes he made to `panelctl` to support multiple STBs.
 
+Thanks to Joe Peled for the `gentuner.IPSTB` script.
+
+Thanks to turak on the SageTV Forums for the `gentuner.HR44` script.
+
 ## Developer Details
 _Tidbits about why the plugin does what it does will be added as time permits._
